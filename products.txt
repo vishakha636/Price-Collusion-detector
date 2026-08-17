@@ -1,0 +1,60 @@
+# ===========================================================================
+# E-commerce Price Collusion Detector - Target Products & ASINs Configuration
+# ===========================================================================
+# Add search keywords or specific 10-character ASINs below (one per line).
+# Lines starting with '#' are ignored.
+
+# --- Cables & Connectivity ---
+type c fast charging cable
+hdmi 2.1 cable 4k 120hz
+lightning to usb c cable
+cat 6 ethernet patch cable
+
+# --- Power Banks & Chargers ---
+power bank 20000mah
+power bank 10000mah fast charge
+fast charger adapter 65w gan
+wireless charger pad 15w
+
+# --- Audio Devices ---
+bluetooth wireless earbuds
+noise cancelling over ear headphones
+portable bluetooth speaker
+neckband bluetooth earphones
+
+# --- Wearables & Smart Tech ---
+smartwatch fitness tracker
+smart band activity tracker
+
+# --- Computer Peripherals ---
+wireless optical mouse
+mechanical gaming keyboard
+usb c hub multiports adapter
+
+# --- Storage Devices ---
+micro sd card 128gb
+external hard drive 1tb
+portable nvme ssd 1tb
+
+# --- Smart Home & Phone Accessories ---
+smart wifi plug 16a
+security camera 1080p indoor
+ring light with tripod stand
+gaming headset with microphone
+adjustable phone stand holder
+
+# --- Specific Product ASINs ---
+B098NS6PVG
+B084DTMYWK
+B082LZGK39
+B0DBTV5QF5
+B0CZ43567W
+B0DZHJT3JB
+B09KH58JZR
+B0C5XVM3V1
+B0GXV5X15P
+B0DCZ3WDTB
+B0D96JNKFN
+B0GXBBD73Q
+B0D78XSMSM
+B0BF57RN3K
