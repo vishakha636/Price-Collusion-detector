@@ -21,8 +21,7 @@ data_gen.log
 external/
 
 # --- Generated data ----------------------------------------------------------
-# The JSON payloads are committed so the dashboard runs without a ~10 min
-# simulation, and run_summary.csv IS the dataset (66 KB).
-# price_series.csv is 15.5 MB of regenerable raw price paths -- excluded to keep
-# the repo light; recreate it with `python -m sim.generate_dataset`.
-data/price_series.csv
+# data/ is deliberately COMMITTED, not ignored: it lets anyone clone the repo and
+# run the dashboard straight away instead of waiting ~8 min for the simulation.
+# That includes data/price_series.csv (15.5 MB of raw price paths) by choice --
+# regenerate any of it with `python -m sim.generate_dataset`.
