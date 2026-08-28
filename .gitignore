@@ -1,0 +1,28 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# --- Node / frontend ---
+node_modules/
+frontend/dist/
+*.log
+
+# --- Simulation run logs ---
+data_gen.log
+
+# --- Cloned third-party repo -------------------------------------------------
+# external/price-collusion-detector is a separate git repository with its own
+# history and owner. Committing it from here would create a gitlink with no
+# .gitmodules entry, which clones as an empty broken directory. Clone it
+# yourself instead (see README quick start), or wire it up as a real submodule.
+external/
+
+# --- Generated data ----------------------------------------------------------
+# The JSON payloads are committed so the dashboard runs without a ~10 min
+# simulation, and run_summary.csv IS the dataset (66 KB).
+# price_series.csv is 15.5 MB of regenerable raw price paths -- excluded to keep
+# the repo light; recreate it with `python -m sim.generate_dataset`.
+data/price_series.csv

@@ -1,0 +1,278 @@
+{
+  "n_runs": 200,
+  "detector_features": [
+    "price_corr",
+    "diff_corr",
+    "sync_change_rate",
+    "rel_gap_mean",
+    "rel_gap_max",
+    "gap_zero_frac",
+    "cv_mean",
+    "rel_step_mean",
+    "change_freq",
+    "autocorr1",
+    "entropy",
+    "state_hhi",
+    "n_states_frac",
+    "retaliation_rate",
+    "undercut_frac",
+    "rebound_after_low",
+    "level_over_median_gap",
+    "lead_lag_strength"
+  ],
+  "level_sensitive_features": [
+    "level_over_min"
+  ],
+  "in_distribution": {
+    "dynamics_only": {
+      "logistic": {
+        "auc": 0.9868,
+        "accuracy": 0.96
+      },
+      "grad_boost": {
+        "auc": 0.9769,
+        "accuracy": 0.93
+      }
+    },
+    "with_level_proxy": {
+      "logistic": {
+        "auc": 0.9942,
+        "accuracy": 0.98
+      },
+      "grad_boost": {
+        "auc": 0.9917,
+        "accuracy": 0.97
+      }
+    }
+  },
+  "transfer": {
+    "q_to_rule": {
+      "logistic": {
+        "auc": 1.0,
+        "accuracy": 0.9125,
+        "n_train": 120,
+        "n_test": 80
+      },
+      "grad_boost": {
+        "auc": 0.7525,
+        "accuracy": 0.7875,
+        "n_train": 120,
+        "n_test": 80
+      }
+    },
+    "rule_to_q": {
+      "logistic": {
+        "auc": 0.43,
+        "accuracy": 0.525,
+        "n_train": 80,
+        "n_test": 120
+      },
+      "grad_boost": {
+        "auc": 0.44166666666666665,
+        "accuracy": 0.5166666666666667,
+        "n_train": 80,
+        "n_test": 120
+      }
+    }
+  },
+  "q_only": {
+    "logistic": {
+      "auc": 0.9730555555555556,
+      "accuracy": 0.95
+    },
+    "grad_boost": {
+      "auc": 0.9586111111111111,
+      "accuracy": 0.8916666666666667
+    }
+  },
+  "permutation_importance": [
+    {
+      "feature": "rel_gap_max",
+      "mean": 0.06624666666666666,
+      "std": 0.012355396481789729
+    },
+    {
+      "feature": "rel_gap_mean",
+      "mean": 0.015276666666666683,
+      "std": 0.004317768199223112
+    },
+    {
+      "feature": "state_hhi",
+      "mean": 4.666666666666893e-05,
+      "std": 8.844332774282213e-05
+    },
+    {
+      "feature": "lead_lag_strength",
+      "mean": 9.999999999998898e-06,
+      "std": 2.9999999999996694e-05
+    },
+    {
+      "feature": "price_corr",
+      "mean": 7.401486830834377e-18,
+      "std": 2.7693827873701497e-17
+    },
+    {
+      "feature": "diff_corr",
+      "mean": 7.401486830834377e-18,
+      "std": 2.7693827873701497e-17
+    },
+    {
+      "feature": "change_freq",
+      "mean": 7.401486830834377e-18,
+      "std": 2.7693827873701497e-17
+    },
+    {
+      "feature": "entropy",
+      "mean": 7.401486830834377e-18,
+      "std": 2.7693827873701497e-17
+    },
+    {
+      "feature": "level_over_median_gap",
+      "mean": 7.401486830834377e-18,
+      "std": 2.7693827873701497e-17
+    },
+    {
+      "feature": "gap_zero_frac",
+      "mean": 3.7007434154171884e-18,
+      "std": 1.9929113200939384e-17
+    },
+    {
+      "feature": "cv_mean",
+      "mean": 3.7007434154171884e-18,
+      "std": 1.9929113200939387e-17
+    },
+    {
+      "feature": "retaliation_rate",
+      "mean": 3.7007434154171884e-18,
+      "std": 1.9929113200939384e-17
+    },
+    {
+      "feature": "sync_change_rate",
+      "mean": 0.0,
+      "std": 0.0
+    },
+    {
+      "feature": "rel_step_mean",
+      "mean": 0.0,
+      "std": 0.0
+    },
+    {
+      "feature": "autocorr1",
+      "mean": 0.0,
+      "std": 0.0
+    },
+    {
+      "feature": "n_states_frac",
+      "mean": 0.0,
+      "std": 0.0
+    },
+    {
+      "feature": "undercut_frac",
+      "mean": 0.0,
+      "std": 0.0
+    },
+    {
+      "feature": "rebound_after_low",
+      "mean": 0.0,
+      "std": 0.0
+    }
+  ],
+  "feature_auc": [
+    {
+      "feature": "price_corr",
+      "auc": 0.7864,
+      "separation": 0.7864
+    },
+    {
+      "feature": "diff_corr",
+      "auc": 0.7518999999999999,
+      "separation": 0.7518999999999999
+    },
+    {
+      "feature": "sync_change_rate",
+      "auc": 0.34275,
+      "separation": 0.65725
+    },
+    {
+      "feature": "rel_gap_mean",
+      "auc": 0.44520000000000004,
+      "separation": 0.5548
+    },
+    {
+      "feature": "rel_gap_max",
+      "auc": 0.1286,
+      "separation": 0.8714
+    },
+    {
+      "feature": "gap_zero_frac",
+      "auc": 0.5033,
+      "separation": 0.5033
+    },
+    {
+      "feature": "cv_mean",
+      "auc": 0.7738,
+      "separation": 0.7738
+    },
+    {
+      "feature": "rel_step_mean",
+      "auc": 0.40945,
+      "separation": 0.59055
+    },
+    {
+      "feature": "change_freq",
+      "auc": 0.31420000000000003,
+      "separation": 0.6858
+    },
+    {
+      "feature": "autocorr1",
+      "auc": 0.7554000000000001,
+      "separation": 0.7554000000000001
+    },
+    {
+      "feature": "entropy",
+      "auc": 0.389,
+      "separation": 0.611
+    },
+    {
+      "feature": "state_hhi",
+      "auc": 0.6693,
+      "separation": 0.6693
+    },
+    {
+      "feature": "n_states_frac",
+      "auc": 0.31300000000000006,
+      "separation": 0.6869999999999999
+    },
+    {
+      "feature": "retaliation_rate",
+      "auc": 0.2509,
+      "separation": 0.7491
+    },
+    {
+      "feature": "undercut_frac",
+      "auc": 0.49684999999999996,
+      "separation": 0.50315
+    },
+    {
+      "feature": "rebound_after_low",
+      "auc": 0.6724,
+      "separation": 0.6724
+    },
+    {
+      "feature": "level_over_min",
+      "auc": 0.994,
+      "separation": 0.994
+    },
+    {
+      "feature": "level_over_median_gap",
+      "auc": 0.7067,
+      "separation": 0.7067
+    },
+    {
+      "feature": "lead_lag_strength",
+      "auc": 0.7232000000000001,
+      "separation": 0.7232000000000001
+    }
+  ],
+  "level_benchmark_auc": 0.999
+}
