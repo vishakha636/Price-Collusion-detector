@@ -503,6 +503,60 @@ an input.
 - `level_over_median_gap` — the P90−P10 spread relative to level.
 - `lead_lag_strength` — does one seller systematically move first?
 
+### Which direction means collusion? Not what you would guess
+
+It is tempting to assume the intuitive directions: cartels keep prices close
+together, competition is messy and volatile. **For learned collusion, several of
+those intuitions are exactly backwards.** Here are the measured means over the
+120 Q-learning markets:
+
+| Clue | Competitive | Collusive | Higher when… |
+|---|---|---|---|
+| `gap_zero_frac` (identical prices) | **0.691** | 0.333 | *competing* |
+| `rel_gap_mean` (gap between sellers) | 0.017 | **0.046** | colluding |
+| `price_corr` | **0.536** | 0.468 | *competing* |
+| `change_freq` | **0.757** | 0.600 | *competing* |
+| `cv_mean` | 0.048 | **0.061** | colluding |
+| `state_hhi` | 0.346 | **0.429** | colluding |
+| `punish_depth` (diagnostic) | 0.040 | **0.146** | colluding |
+
+**Identical prices indicate competition here, not collusion.** The reason is
+mechanical: myopic bots both chase the same best reply and end up *matching each
+other* at the competitive price. Patient bots sustain high prices through an
+**asymmetric cycle** — taking turns being the expensive one — so they are rarely
+equal. The folk assumption that "two sellers posting the same price must be a
+cartel" is inverted for this phenomenon, which is a genuinely useful thing to be
+able to say in a viva.
+
+### Mechanism-robust versus mechanism-dependent features
+
+Repeat the same comparison on the 80 scripted markets and three clues **reverse
+sign** relative to the learned markets:
+
+| Clue | Learned: higher when | Scripted: higher when | |
+|---|---|---|---|
+| `gap_zero_frac` | competing | colluding | ⚠ **flips** |
+| `rel_gap_mean` | colluding | competing | ⚠ **flips** |
+| `price_corr` | competing (0.468) | colluding (0.988) | ⚠ **flips** |
+| `cv_mean` | colluding | colluding | consistent |
+| `state_hhi` | colluding | colluding | consistent |
+| `change_freq` | competing | competing | consistent |
+| `entropy` | competing | competing | consistent |
+| `rel_gap_max` | competing | competing | consistent |
+| `punish_depth` | colluding | colluding | consistent |
+
+This table is the mechanical explanation of the transfer failure in Result 4, and
+it is worth memorising. Six clues are consistent across both mechanisms; three
+invert. The three that invert are precisely the gap- and correlation-based ones
+— which is exactly what a hand-written cartel is built out of.
+
+Practical consequence for stage 2: treat `cv_mean` and `state_hhi` as the most
+trustworthy deployable signals, and anything gap- or correlation-based as
+mechanism-dependent until proven otherwise. Note that `punish_depth` is
+consistent and strong but **cannot** be deployed — it requires forcing a seller
+to defect, which you cannot do to a real Amazon seller. It is evidence that the
+collusive label is real, not a usable feature.
+
 ### One feature was thrown out, and you should mention this in the viva
 
 `level_over_min` scored AUC **0.994** — nearly as good as the cost-based
@@ -524,6 +578,57 @@ explain *why* you discarded it is worth more than the 0.994.
 ---
 
 ## 13. Results, including the ones that went badly
+
+### Result 0 — what a market actually looks like
+
+Before any statistics, look at two real markets from `data/dashboard.json`. This
+is the whole project in a dozen numbers.
+
+**A competitive market** — `q_myopic_57`, γ = 0. Competitive price for this
+market is 1.4332, cartel price 1.9028. Last ten observed rounds:
+
+```
+shop A:  1.39  1.39  1.39  1.39  1.39  1.39  1.39  1.39  1.39  1.39
+shop B:  1.39  1.39  1.39  1.39  1.39  1.39  1.67  1.39  1.39  1.39
+```
+
+Both sellers frozen at the same price, sitting *at* the competitive level.
+Δ = −0.152. The single 1.67 is a tremble.
+
+**A collusive market** — `q_patient_1006`, γ = 0.9343. Competitive price 1.5183,
+cartel price 1.941.
+
+```
+shop A:  1.92  1.86  1.92  1.48  1.73  1.54  1.54  1.98  1.86  1.92
+shop B:  1.79  1.92  1.79  1.92  1.54  1.54  1.60  1.79  1.92  1.79
+```
+
+Prices around 1.8–1.9, far above the 1.5183 competitive level. Δ = 0.898. Notice
+the two sellers are almost never at the same price — they take turns being the
+expensive one.
+
+**Now the defection probe.** Force shop A to cut to the competitive price on
+round 1 and watch what shop B does.
+
+Competitive market — B does not react at all:
+
+```
+A (forced):  1.46 → 1.39  1.39  1.39  1.39  1.39
+B:           1.39   1.39  1.39  1.39  1.39  1.39     punishment depth 0.000
+```
+
+Collusive market — B cuts its own price in response, then both climb back:
+
+```
+A (forced):  1.54 → 1.54  1.54  1.98  1.86  1.92
+B:           1.79   1.54  1.60  1.79  1.92  1.79     punishment depth 0.178
+```
+
+Nothing in the code tells B to retaliate. There is no cartel logic, no
+punishment rule, no communication channel. B learned that responding to
+undercutting with its own price cut protects a high-price equilibrium that is
+worth more to it than any single round of lost sales. That is the entire
+phenomenon, visible directly in the numbers.
 
 ### Result 1 — patient bots collude, myopic bots don't
 
@@ -603,12 +708,27 @@ were generated by a process the model has never seen:
 is systematically *inverted*, meaning the signature it learned is backwards for
 learned collusion.
 
-The reason: the scripted `grim_cartel` is recognisable mainly because both
-sellers post *identical* prices (`gap_zero_frac` near 1). That is not how the
-Q-learners sustain high prices — they run asymmetric cycles where the two sellers
-sit at *different* prices. So a model trained on scripted cartels learns
-"identical prices = collusion" and then confidently mislabels the real
-phenomenon.
+The reason is the sign flip documented in section 12, and the numbers are stark:
+
+| | Scripted cartel | Learned collusion |
+|---|---|---|
+| `gap_zero_frac` (identical prices) | **0.921** | 0.333 |
+| `price_corr` | **0.988** | 0.468 |
+
+The scripted cartel holds prices high by having both sellers post the *same*
+price — correlation 0.988, identical on 92% of rounds. The Q-learners hold prices
+high by running an *asymmetric cycle*, taking turns being expensive — identical
+on only 33% of rounds, correlation 0.468, which is *lower* than their own
+competitive baseline of 0.536.
+
+So a model trained on scripted cartels learns "identical prices and high
+correlation = collusion", then meets real learned collusion — different prices,
+low correlation — and confidently votes *innocent*. Every time. AUC 0.430 rather
+than 0.5 is what "systematically inverted" looks like as a number.
+
+This is not a vague generalisation failure. It is three specific features
+(`gap_zero_frac`, `rel_gap_mean`, `price_corr`) pointing the wrong way, and you
+can name them.
 
 This is the most valuable output of stage 1 and it directly constrains stage 2:
 **you must train on learned collusion, not on a hand-written cartel model.** Had
