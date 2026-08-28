@@ -12,21 +12,14 @@ algorithmic collusion. Keep it labeled as `source="fuel_psu"` so it
 never gets mixed into the e-commerce analysis by accident.
 
 Usage:
-    python fuel_scraper.py --cities Mumbai Delhi Bengaluru Chennai --out fuel_prices.csv
-
-Notes:
-    - Fuel price aggregator sites change their HTML periodically.
-    - Before relying on this in your pipeline, run once with
-      --debug to dump the raw HTML and confirm the CSS selectors
-      below still match. Adjust SELECTORS if the site has changed.
-    - Run this once a day via cron (prices update ~6 AM IST).
+    python fuel_scraper.py --cities Mumbai Delhi Bengaluru --fuel-types petrol diesel --out fuel_prices.csv
 """
 
 import argparse
 import csv
 import datetime as dt
-import time
 import sys
+import time
 from pathlib import Path
 
 import requests
@@ -43,37 +36,47 @@ HEADERS = {
     )
 }
 
-# Aggregator that lists IOCL/BPCL/HPCL/private prices per city in one table.
-# Verify this URL pattern still works before your first real run -
-# site structures change; treat this as a starting skeleton.
-FUEL_AGGREGATOR_URL_TEMPLATE = "https://www.goodreturns.in/petrol-price-in-{city}.html"
+# Aggregator template for fuel prices per city
+FUEL_AGGREGATOR_URL_TEMPLATE = "https://www.goodreturns.in/{fuel_type}-price-in-{city}.html"
 
-# The sellers you're comparing per city
 FUEL_SELLERS = ["IOCL", "BPCL", "HPCL"]
 
-REQUEST_DELAY_SECONDS = 2.0  # be polite - one request per city per run
+DEFAULT_CITIES = [
+    "Mumbai", "Delhi", "Bengaluru", "Chennai", "Kolkata", "Hyderabad",
+    "Pune", "Ahmedabad", "Jaipur", "Lucknow", "Chandigarh", "Surat",
+    "Patna", "Noida", "Gurgaon", "Indore"
+]
+
+FUEL_TYPES_CONFIG = {
+    "petrol": {
+        "product_id": "petrol",
+        "product_name": "Petrol (95 octane)",
+    },
+    "diesel": {
+        "product_id": "diesel",
+        "product_name": "Diesel",
+    }
+}
+
+REQUEST_DELAY_SECONDS = 1.5
 
 
 # ---------------------------------------------------------------------------
 # SCRAPER
 # ---------------------------------------------------------------------------
 
-def fetch_city_page(city: str, debug: bool = False) -> str:
-    url = FUEL_AGGREGATOR_URL_TEMPLATE.format(city=city.lower())
+def fetch_city_fuel_page(city: str, fuel_type: str = "petrol", debug: bool = False) -> str:
+    url = FUEL_AGGREGATOR_URL_TEMPLATE.format(fuel_type=fuel_type.lower(), city=city.lower().replace(" ", "-"))
     resp = requests.get(url, headers=HEADERS, timeout=15)
     resp.raise_for_status()
     if debug:
-        debug_path = Path(f"debug_{city.lower()}.html")
+        debug_path = Path(f"debug_{city.lower()}_{fuel_type.lower()}.html")
         debug_path.write_text(resp.text, encoding="utf-8")
         print(f"[debug] saved raw HTML -> {debug_path}")
     return resp.text
 
 
-def parse_prices(html: str, city: str) -> list[dict]:
-    """
-    Parses daily petrol price for a city from the aggregator page and creates
-    records for each PSU seller (IOCL, BPCL, HPCL).
-    """
+def parse_prices(html: str, city: str, fuel_type: str = "petrol") -> list[dict]:
     soup = BeautifulSoup(html, "html.parser")
     records = []
     today = dt.date.today().isoformat()
@@ -81,22 +84,24 @@ def parse_prices(html: str, city: str) -> list[dict]:
 
     price = None
 
-    # Method 1: Main price card element `#fp-price` or `.fp-price-big`
     price_el = soup.find(id="fp-price") or soup.find(class_="fp-price-big")
     if price_el:
         price = _extract_price(price_el.get_text(" ", strip=True))
 
-    # Method 2: Intro summary block `#gr_intro_content`
     if not price:
         intro_el = soup.find(id="gr_intro_content")
         if intro_el:
             price = _extract_price(intro_el.get_text(" ", strip=True))
 
-    # Method 3: Meta description tag fallback
     if not price:
         meta = soup.find("meta", {"name": "description"})
         if meta and meta.get("content"):
             price = _extract_price(meta["content"])
+
+    fuel_meta = FUEL_TYPES_CONFIG.get(fuel_type.lower(), {
+        "product_id": fuel_type.lower(),
+        "product_name": fuel_type.capitalize()
+    })
 
     if price is not None:
         for seller in FUEL_SELLERS:
@@ -104,10 +109,11 @@ def parse_prices(html: str, city: str) -> list[dict]:
                 "date": today,
                 "timestamp": now_iso,
                 "seller": seller,
-                "product_id": "petrol",
-                "product_name": "Petrol (95 octane)",
+                "product_id": fuel_meta["product_id"],
+                "product_name": fuel_meta["product_name"],
                 "price": price,
                 "city": city,
+                "availability": "Available",
                 "source": "fuel_psu",
             })
 
@@ -115,7 +121,6 @@ def parse_prices(html: str, city: str) -> list[dict]:
 
 
 def _extract_price(text: str) -> float | None:
-    """Pulls the first plausible rupee price (e.g. 96.72 or 111.38) out of a text blob."""
     import re
     match = re.search(r"(\d{2,3}\.\d{1,2})", text)
     if match:
@@ -123,29 +128,31 @@ def _extract_price(text: str) -> float | None:
     return None
 
 
-def scrape_all(cities: list[str], debug: bool = False) -> list[dict]:
+def scrape_all(cities: list[str], fuel_types: list[str], debug: bool = False) -> list[dict]:
     all_records = []
     for city in cities:
-        print(f"Fetching {city}...")
-        try:
-            html = fetch_city_page(city, debug=debug)
-            records = parse_prices(html, city)
-            print(f"  -> {len(records)} price records found")
-            all_records.extend(records)
-        except requests.RequestException as e:
-            print(f"  [warn] failed to fetch {city}: {e}", file=sys.stderr)
-        time.sleep(REQUEST_DELAY_SECONDS)
+        for ftype in fuel_types:
+            print(f"Fetching {ftype.upper()} price for {city}...")
+            try:
+                html = fetch_city_fuel_page(city, fuel_type=ftype, debug=debug)
+                records = parse_prices(html, city, fuel_type=ftype)
+                print(f"  -> {len(records)} records found")
+                all_records.extend(records)
+            except requests.RequestException as e:
+                print(f"  [warn] failed to fetch {ftype} for {city}: {e}", file=sys.stderr)
+            time.sleep(REQUEST_DELAY_SECONDS)
     return all_records
 
 
-def save_csv(records: list[dict], out_path: str):
+def save_csv(records: list[dict], out_path: str, append: bool = True):
     if not records:
         print("[warn] no records collected, nothing to save")
         return
     fieldnames = ["date", "timestamp", "seller", "product_id",
-                  "product_name", "price", "city", "source"]
-    write_header = not Path(out_path).exists()
-    with open(out_path, "a", newline="", encoding="utf-8") as f:
+                  "product_name", "price", "city", "availability", "source"]
+    mode = "a" if append else "w"
+    write_header = not Path(out_path).exists() or not append
+    with open(out_path, mode, newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         if write_header:
             writer.writeheader()
@@ -158,14 +165,13 @@ def save_csv(records: list[dict], out_path: str):
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Scrape daily fuel prices by city")
-    parser.add_argument("--cities", nargs="+", default=[
-        "Mumbai", "Delhi", "Bengaluru", "Chennai", "Kolkata", "Hyderabad"
-    ])
+    parser = argparse.ArgumentParser(description="Scrape daily fuel prices (petrol & diesel) by city")
+    parser.add_argument("--cities", nargs="+", default=DEFAULT_CITIES)
+    parser.add_argument("--fuel-types", nargs="+", default=["petrol", "diesel"])
     parser.add_argument("--out", default="fuel_prices.csv")
     parser.add_argument("--debug", action="store_true",
-                         help="Save raw HTML per city for selector debugging")
+                        help="Save raw HTML per city for selector debugging")
     args = parser.parse_args()
 
-    records = scrape_all(args.cities, debug=args.debug)
-    save_csv(records, args.out)
+    records = scrape_all(args.cities, args.fuel_types, debug=args.debug)
+    save_csv(records, args.out, append=True)

@@ -48,16 +48,20 @@ def normalize_fuel_records(records: list[dict]) -> list[dict]:
     for r in records:
         if r.get("seller") == "seller" or r.get("price") == "price":
             continue
+
+        prod_id = r.get("product_id") or "petrol"
+        prod_name = r.get("product_name") or ("Diesel" if prod_id == "diesel" else "Petrol (95 octane)")
+
         norm = {
             "date": r.get("date", ""),
             "timestamp": r.get("timestamp", ""),
             "seller": r.get("seller", ""),
-            "product_id": r.get("product_id", "petrol"),
-            "product_name": r.get("product_name", "Petrol"),
+            "product_id": prod_id,
+            "product_name": prod_name,
             "price": _parse_price_float(r.get("price")),
             "city": r.get("city", ""),
-            "availability": r.get("availability", "Available"),
-            "source": r.get("source", "fuel_psu"),
+            "availability": r.get("availability") or "Available",
+            "source": r.get("source") or "fuel_psu",
         }
         normalized.append(norm)
     return normalized
@@ -75,12 +79,24 @@ def normalize_ecommerce_records(records: list[dict]) -> list[dict]:
             "product_id": r.get("product_id", ""),
             "product_name": r.get("product_name", ""),
             "price": _parse_price_float(r.get("price")),
-            "city": r.get("city", "Online"),
-            "availability": r.get("availability", "In stock"),
-            "source": r.get("source", "ecommerce_amazon"),
+            "city": r.get("city") or "Online",
+            "availability": r.get("availability") or "In stock",
+            "source": r.get("source") or "ecommerce_amazon",
         }
         normalized.append(norm)
     return normalized
+
+
+def deduplicate_records(records: list[dict]) -> list[dict]:
+    """Deduplicates records based on unique key (date, seller, product_id, city, source)."""
+    seen = set()
+    deduped = []
+    for r in records:
+        key = (r.get("date"), r.get("seller"), r.get("product_id"), r.get("city"), r.get("source"))
+        if key not in seen:
+            seen.add(key)
+            deduped.append(r)
+    return deduped
 
 
 def save_combined_csv(records: list[dict], out_path: str):
@@ -105,6 +121,7 @@ def summarize(records: list[dict]):
     sources = {}
     sellers = set()
     products = set()
+    cities = set()
 
     for r in records:
         src = r.get("source", "unknown")
@@ -113,13 +130,16 @@ def summarize(records: list[dict]):
             sellers.add(r.get("seller"))
         if r.get("product_id"):
             products.add(r.get("product_id"))
+        if r.get("city"):
+            cities.add(r.get("city"))
 
     print("\nRecords by Source:")
     for src, count in sources.items():
         print(f"  - {src}: {count} records")
 
     print(f"\nUnique Sellers ({len(sellers)}): {', '.join(sorted(sellers))}")
-    print(f"Unique Products ({len(products)}): {len(products)} products tracked")
+    print(f"Unique Products ({len(products)}): {', '.join(sorted(products))[:100]}...")
+    print(f"Unique Cities ({len(cities)}): {', '.join(sorted(cities))}")
     print("=" * 55 + "\n")
 
 
@@ -136,7 +156,7 @@ if __name__ == "__main__":
     fuel_norm = normalize_fuel_records(fuel_raw)
     ecom_norm = normalize_ecommerce_records(ecom_raw)
 
-    combined = fuel_norm + ecom_norm
+    combined = deduplicate_records(fuel_norm + ecom_norm)
 
     save_combined_csv(combined, args.out)
     summarize(combined)
