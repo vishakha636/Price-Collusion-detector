@@ -36,17 +36,17 @@ export default function FeatureRanking({ runs, features }) {
       {[0.25, 0.5, 0.75, 1].map((t) => (
         <g key={t}>
           <line x1={mid - half * t} x2={mid - half * t} y1={padT - 6} y2={H - 6}
-            stroke="#172230" strokeDasharray="3 4" />
+            stroke="#e6ebf2" strokeDasharray="3 4" />
           <line x1={mid + half * t} x2={mid + half * t} y1={padT - 6} y2={H - 6}
-            stroke="#172230" strokeDasharray="3 4" />
+            stroke="#e6ebf2" strokeDasharray="3 4" />
         </g>
       ))}
-      <line x1={mid} x2={mid} y1={padT - 10} y2={H - 6} stroke="#3a4a5c" />
+      <line x1={mid} x2={mid} y1={padT - 10} y2={H - 6} stroke="#c5d0de" />
 
-      <text className="tick" x={mid - half} y={padT - 16} textAnchor="start" fill="#22d3ee">
+      <text className="tick" x={mid - half} y={padT - 16} textAnchor="start" fill="#0891b2">
         ← higher when competitive
       </text>
-      <text className="tick" x={mid + half} y={padT - 16} textAnchor="end" fill="#fbbf24">
+      <text className="tick" x={mid + half} y={padT - 16} textAnchor="end" fill="#e07b00">
         higher when collusive →
       </text>
 
@@ -56,7 +56,7 @@ export default function FeatureRanking({ runs, features }) {
         const w = r.sep * half
         const right = r.higherIn === 'collusive'
         const flagged = LEVEL_SENSITIVE.has(r.f)
-        const color = flagged ? '#8b9bb0' : right ? '#fbbf24' : '#22d3ee'
+        const color = flagged ? '#56667a' : right ? '#e07b00' : '#0891b2'
         return (
           <g key={r.f}>
             <title>
@@ -75,7 +75,7 @@ export default function FeatureRanking({ runs, features }) {
             </text>
             <rect x={right ? mid : mid - w} y={y + 2} width={Math.max(w, 1)} height={rowH - 10}
               fill={color} fillOpacity={flagged ? 0.28 : 0.7} rx="2"
-              stroke={flagged ? '#8b9bb0' : 'none'} strokeDasharray={flagged ? '3 3' : ''}
+              stroke={flagged ? '#56667a' : 'none'} strokeDasharray={flagged ? '3 3' : ''}
               strokeWidth={flagged ? 1 : 0} />
             <text x={W - padR + 10} y={y + 12}
               style={{ font: '500 11px var(--mono)', fill: 'var(--text-faint)' }}>

@@ -1,0 +1,127 @@
+/* Calm theme for the app (sidebar pages). Loaded last: overrides the brighter
+   styles elsewhere. White cards, thin grey borders, one blue for actions,
+   status as a small coloured dot + word. No gradients, tints or shadows. */
+
+.shell {
+  --brand: #2563eb;
+  --brand-l: #f3f4f6;
+  --ink: #111827;
+  --ink-2: #4b5563;
+  --ink-3: #9ca3af;
+  --bd: #e5e7eb;
+  background: #f9fafb;
+  color: var(--ink);
+}
+
+/* sidebar: white, quiet */
+.shell .side { background: #fff; color: var(--ink-2); border-right: 1px solid var(--bd); width: 212px; padding: 18px 12px; }
+.shell .side .brand { color: var(--ink); font-size: 17px; padding-bottom: 20px; }
+.shell .side nav a { color: var(--ink-2); padding: 8px 10px; border-radius: 6px; font-size: 14px; font-weight: 500; }
+.shell .side nav a:hover { background: #f3f4f6; color: var(--ink); }
+.shell .side nav a[data-on='true'] { background: #eff6ff; color: var(--brand); }
+.shell .side-foot { border-top-color: var(--bd); }
+.shell .side-foot b { color: var(--ink); }
+.shell .side-foot small { color: var(--ink-3); }
+.shell .side-badge { background: #dc2626; }
+
+.shell .topbar { height: 56px; background: #fff; border-bottom: 1px solid var(--bd); padding: 0 28px; }
+.shell .topbar h1 { font-size: 17px; font-weight: 600; }
+
+/* cards and headings */
+.shell .card, .shell .a-card, .shell .a-stat, .shell .a-status, .shell .p-rivals, .shell .x-rival {
+  background: #fff; border: 1px solid var(--bd); border-radius: 8px; box-shadow: none;
+}
+.shell .card h2, .shell .a-card h3, .shell .x-head h3 {
+  font-size: 14px; font-weight: 600; color: var(--ink); text-transform: none; letter-spacing: 0;
+}
+.shell .a-stat { border-top: 1px solid var(--bd); }
+.shell .a-stat b, .shell .a-stat .a-stat-v, .shell .r-count { color: var(--ink); }
+.shell .rs-sub, .shell .a-muted, .shell .muted { color: var(--ink-3); }
+
+/* buttons */
+.shell .btn, .shell .a-btn { border-radius: 6px; padding: 8px 14px; font-size: 14px; font-weight: 500; box-shadow: none; }
+.shell .btn:hover, .shell .a-btn:hover:not(:disabled) { box-shadow: none; }
+.shell .btn.ghost, .shell .a-btn.ghost { background: #fff; color: var(--ink); box-shadow: none; border: 1px solid #d1d5db; }
+.shell .btn.ghost:hover { background: #f9fafb; }
+
+/* status: dot + word instead of filled pills */
+.shell .pill, .shell .a-pill {
+  background: none; color: var(--ink-2); padding: 0; font-weight: 500; font-size: 13px;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.shell .pill::before, .shell .a-pill::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--c); flex: none; }
+
+/* tabs */
+.shell .a-tabs button { font-weight: 500; }
+
+/* stat tiles */
+.shell .rs-real div { background: #fff; border: 1px solid var(--bd); border-radius: 8px; }
+.shell .rs-real b { color: var(--ink); font-size: 22px; font-weight: 600; }
+.shell .al-stats div { border-radius: 8px; }
+.shell .al-stats b { color: var(--ink); font-weight: 600; }
+
+/* product page */
+.shell .p-own { background: #fff; color: var(--ink); border: 1px solid var(--bd); border-radius: 8px; }
+.shell .p-own .p-lbl, .shell .p-lbl { color: var(--ink-3); letter-spacing: .04em; }
+.shell .p-own-brand { font-size: 20px; font-weight: 600; }
+.shell .p-own-name { color: var(--ink-2); }
+.shell .p-own-meta { color: var(--ink-3); }
+.shell .p-own-meta b { color: var(--ink); font-size: 18px; }
+.shell .p-vs { grid-template-columns: minmax(220px, 1fr) 2fr; }
+.shell .p-vs-mark { display: none; }
+.shell .p-rival { border-radius: 6px; background: #fff; }
+.shell .p-rival[data-tone] { border-color: var(--bd); background: #fff; }
+.shell .p-rival-line { color: var(--ink-2); font-weight: 400; display: flex; align-items: center; gap: 6px; }
+.shell .p-rival-line::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #16a34a; flex: none; }
+.shell .p-rival[data-tone='warn'] .p-rival-line, .shell .p-rival[data-tone='bad'] .p-rival-line { color: var(--ink); }
+.shell .p-rival[data-tone='warn'] .p-rival-line::before { background: #d97706; }
+.shell .p-rival[data-tone='bad'] .p-rival-line::before { background: #dc2626; }
+.shell .p-rival[data-tone='wait'] .p-rival-line::before { background: #d1d5db; }
+.shell .p-verdict { border: 1px solid var(--bd); border-radius: 8px; padding: 14px 16px; gap: 14px; }
+.shell .p-verdict-badge { background: none; color: var(--ink); font-size: 16px; font-weight: 600; padding: 0; display: inline-flex; align-items: center; gap: 8px; }
+.shell .p-verdict-badge::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--c); }
+.shell .p-verdict-text b { font-size: 14px; font-weight: 500; }
+.shell .p-more-toggle { border: 1px solid var(--bd); border-radius: 8px; padding: 10px 14px; }
+.shell .p-more-toggle span { color: var(--ink); font-weight: 500; font-size: 14px; }
+.shell .p-you, .shell .rs-you { background: none; color: var(--brand); padding: 0; font-weight: 600; }
+.shell .p-cell-own b { color: var(--ink); }
+.shell .p-rtag { background: none; border: 1px solid var(--bd); }
+.shell tr.p-mine td { background: #f9fafb; font-weight: 500; }
+
+/* explanation panel */
+.shell .x-conf { border: 0; color: var(--ink-3); font-weight: 500; padding: 0; }
+.shell .x-tag { background: none; border: 1px solid var(--bd); color: var(--ink-3); font-weight: 500; }
+.shell .x-survive-sum, .shell .x-survive-sum.ok { background: none; color: var(--ink); padding: 0; font-weight: 500; }
+.shell .x-signfound { color: var(--ink-2); font-weight: 500; }
+.shell .x-chain tr[data-hit='true'] td:nth-child(3) { color: var(--ink); font-weight: 600; }
+
+/* AI analyst */
+.shell .ai-msg.me { background: #f3f4f6; color: var(--ink); }
+.shell .ai-msg.ai { background: #fff; border: 1px solid var(--bd); }
+.shell .ai-conn, .shell .ai-conn.on { background: none; color: var(--ink-3); padding: 0; }
+.shell .ai-quick button { border-color: var(--bd); color: var(--ink-2); }
+.shell .ai-lang button[data-on='true'] { background: #f3f4f6; color: var(--ink); }
+.shell .ai-li::before { color: var(--ink-3); }
+
+/* banners */
+.shell .banner.bad { border-radius: 6px; }
+.shell .p-chip { background: none; border: 1px solid var(--bd); color: var(--ink-2); font-weight: 500; }
+.shell .a-tabs button[data-on='true'] { color: var(--ink); }
+.shell .rs-stat { border-radius: 8px; box-shadow: none; }
+.shell .rs-stat b { color: var(--ink); font-size: 24px; font-weight: 600; }
+.shell .x-bar div { opacity: .75; }
+.shell .x-sig td { text-align: left; }
+.shell .x-sig td.x-pts { text-align: right; }
+
+/* check a product (agent) */
+.ck-form { display: flex; gap: 8px; }
+.ck-form input { flex: 1; border: 1px solid #d1d5db; border-radius: 6px; padding: 10px 12px; font: inherit; font-size: 14px; background: #fff; }
+.ck-note { font-size: 12.5px; color: var(--ink-3); margin: 8px 0 16px; }
+.ck-steps ol { list-style: none; margin: 0; padding: 0; }
+.ck-steps li { display: flex; align-items: baseline; gap: 10px; padding: 7px 0; border-bottom: 1px solid #f3f4f6; font-size: 14px; }
+.ck-steps li b { font-weight: 500; min-width: 190px; }
+.ck-steps li span:not(.ck-dot) { color: var(--ink-2); font-size: 13px; }
+.ck-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c); flex: none; align-self: center; }
+.ck-live .ck-dot { animation: aiB 1s infinite; }
+.ck-result { margin-top: 16px; }
+.ck-table { margin-top: 14px; }

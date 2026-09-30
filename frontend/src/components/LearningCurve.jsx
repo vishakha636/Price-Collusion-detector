@@ -50,23 +50,23 @@ export default function LearningCurve({ runs, meta, height = 290 }) {
   return (
     <ResponsiveContainer width="100%" height={height}>
       <LineChart data={data} margin={{ top: 10, right: 74, bottom: 22, left: 4 }}>
-        <CartesianGrid stroke="#172230" vertical={false} />
+        <CartesianGrid stroke="#e6ebf2" vertical={false} />
         <XAxis dataKey="t" {...axis}
           ticks={thinTicks(data, 7)}
           tickFormatter={(v) => `${Math.round(v / 1000)}k`}
           label={{ value: 'training period', position: 'insideBottom', offset: -12,
-            fill: '#5b6a7d', fontSize: 11, fontFamily: 'var(--mono)' }} />
+            fill: '#7a8898', fontSize: 11, fontFamily: 'var(--mono)' }} />
         <YAxis domain={[lo - pad, hi + pad]} {...axis} width={52}
           tickFormatter={(v) => `${v.toFixed(2)}x`} />
         <Tooltip {...chartTooltip}
           labelFormatter={(v) => `period ${Number(v).toLocaleString()}`}
           formatter={(v, k) => [`${Number(v).toFixed(4)}x Nash`, REGIMES[k]?.name ?? k]} />
 
-        <ReferenceLine y={1} stroke="#22d3ee" strokeDasharray="5 4" strokeOpacity={0.75}
-          label={{ value: 'Nash', position: 'right', fill: '#22d3ee', fontSize: 10.5,
+        <ReferenceLine y={1} stroke="#0891b2" strokeDasharray="5 4" strokeOpacity={0.75}
+          label={{ value: 'Nash', position: 'right', fill: '#0891b2', fontSize: 10.5,
             fontFamily: 'var(--mono)' }} />
-        <ReferenceLine y={monoRatio} stroke="#fbbf24" strokeDasharray="5 4" strokeOpacity={0.75}
-          label={{ value: 'monopoly', position: 'right', fill: '#fbbf24', fontSize: 10.5,
+        <ReferenceLine y={monoRatio} stroke="#e07b00" strokeDasharray="5 4" strokeOpacity={0.75}
+          label={{ value: 'monopoly', position: 'right', fill: '#e07b00', fontSize: 10.5,
             fontFamily: 'var(--mono)' }} />
 
         {Object.keys(byRegime).map((reg) => (

@@ -1,0 +1,17 @@
+{
+  "case": "CCI Reference Case No. 08 of 2013 (tyre cartel)",
+  "order": "31 Aug 2018 · published 2022",
+  "url": "https://www.cci.gov.in/images/antitrustorder/en/0820131652434997.pdf",
+  "source": "Table 3, para 123: aggregate annual price increase, leading cross-ply truck/bus tyre variant",
+  "years": ["FY10", "FY11", "FY12", "FY13", "FY14"],
+  "companies": {
+    "Apollo": [4.00, 13.49, 11.55, 10.21, -0.87],
+    "MRF": [1.90, 17.23, 11.64, 10.30, -0.80],
+    "CEAT": [7.76, 19.19, 11.18, 10.13, -3.19],
+    "JK": [9.01, 17.89, 11.36, 10.30, 1.21],
+    "Birla": [9.56, 19.69, 11.62, -1.36, -5.22]
+  },
+  "penalty_crore": {"Apollo": 425.53, "MRF": 622.09, "CEAT": 252.16, "JK": 309.95, "Birla": 178.33},
+  "email": "18 May 2011: price increase planned as 3% + 3% + 4.5% = 10.5%",
+  "correlation": "0.979–0.996 between companies' prices, 2009–2014 (Table 4)"
+}

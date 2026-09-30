@@ -25,3 +25,9 @@ external/
 # run the dashboard straight away instead of waiting ~8 min for the simulation.
 # That includes data/price_series.csv (15.5 MB of raw price paths) by choice --
 # regenerate any of it with `python -m sim.generate_dataset`.
+
+# German fuel benchmark raw download (re-fetch with python -m bench.fuel_de download)
+data/fuel_de_cache/
+data/archive_cache/
+data/pha_cache/
+.env

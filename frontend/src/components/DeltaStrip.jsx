@@ -45,22 +45,22 @@ export default function DeltaStrip({ runs, selected, onSelect }) {
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto' }}>
       {/* reference bands: 0 = competitive, 1 = perfect cartel */}
       <rect x={x(domain[0])} y={padT - 8} width={x(0) - x(domain[0])} height={H - padT - 26}
-        fill="#0d1a20" />
+        fill="#e8f6fa" />
       <rect x={x(1)} y={padT - 8} width={x(domain[1]) - x(1)} height={H - padT - 26}
-        fill="#241c0c" />
+        fill="#fff6e5" />
 
       {gridTicks.map((t) => (
         <g key={t}>
           <line x1={x(t)} x2={x(t)} y1={padT - 8} y2={H - 34}
-            stroke={t === 0 || t === 1 ? '#3a4a5c' : '#1b2531'}
+            stroke={t === 0 || t === 1 ? '#c5d0de' : '#e6ebf2'}
             strokeDasharray={t === 0 || t === 1 ? '' : '3 4'} />
           <text className="tick" x={x(t)} y={H - 18} textAnchor="middle">{t}</text>
         </g>
       ))}
-      <text className="tick" x={x(0)} y={padT - 14} textAnchor="middle" fill="#22d3ee">
+      <text className="tick" x={x(0)} y={padT - 14} textAnchor="middle" fill="#0891b2">
         Bertrand-Nash
       </text>
-      <text className="tick" x={x(1)} y={padT - 14} textAnchor="middle" fill="#fbbf24">
+      <text className="tick" x={x(1)} y={padT - 14} textAnchor="middle" fill="#e07b00">
         perfect cartel
       </text>
       <text className="axis-label" x={(padL + W - padR) / 2} y={H - 2} textAnchor="middle">

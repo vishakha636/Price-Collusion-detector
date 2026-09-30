@@ -1,7 +1,7 @@
 import { FEATURE_INFO, fmt } from '../lib/stats'
 
 const scoreColor = (auc) =>
-  auc >= 0.9 ? '#34d399' : auc >= 0.75 ? '#fbbf24' : '#f87171'
+  auc >= 0.9 ? '#12a150' : auc >= 0.75 ? '#e07b00' : '#d92d20'
 
 function ScoreRow({ label, note, scores }) {
   return (
@@ -96,7 +96,7 @@ export default function ModelReport({ report }) {
             note="120 Q-learning markets held out entirely"
             scores={report.transfer?.rule_to_q ?? {}} />
 
-          <p className="note" style={{ borderLeftColor: 'var(--danger)', background: '#1d1114' }}>
+          <p className="note" style={{ borderLeftColor: 'var(--danger)', background: '#fdecea' }}>
             <b>Negative result, reported as found.</b> Training on the rule-based
             controls and testing on the learned markets collapses to AUC{' '}
             {fmt(report.transfer?.rule_to_q?.logistic?.auc, 3)} — at or below chance.
@@ -127,10 +127,10 @@ export default function ModelReport({ report }) {
               <div style={{ fontSize: 12.5, color: 'var(--text-dim)', textAlign: 'right' }}>
                 {name}
               </div>
-              <div style={{ background: '#121a24', borderRadius: 3, height: 13 }}>
+              <div style={{ background: '#eef2f7', borderRadius: 3, height: 13 }}>
                 <div style={{
                   width: `${Math.max((Math.abs(d.mean) / maxImp) * 100, 0.6)}%`,
-                  height: '100%', borderRadius: 3, background: '#a78bfa', opacity: 0.8,
+                  height: '100%', borderRadius: 3, background: '#0c56a8', opacity: 0.8,
                 }} />
               </div>
               <div style={{

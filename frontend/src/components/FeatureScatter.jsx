@@ -32,7 +32,7 @@ export default function FeatureScatter({ runs, fx, fy, selected, onSelect }) {
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto' }}>
       {ticks(dom.y).map((t, i) => (
         <g key={`y${i}`}>
-          <line x1={pad.l} x2={W - pad.r} y1={sy(t)} y2={sy(t)} stroke="#172230" />
+          <line x1={pad.l} x2={W - pad.r} y1={sy(t)} y2={sy(t)} stroke="#e6ebf2" />
           <text className="tick" x={pad.l - 8} y={sy(t) + 3.5} textAnchor="end">
             {t.toFixed(2)}
           </text>
@@ -40,7 +40,7 @@ export default function FeatureScatter({ runs, fx, fy, selected, onSelect }) {
       ))}
       {ticks(dom.x).map((t, i) => (
         <g key={`x${i}`}>
-          <line x1={sx(t)} x2={sx(t)} y1={pad.t} y2={H - pad.b} stroke="#172230" />
+          <line x1={sx(t)} x2={sx(t)} y1={pad.t} y2={H - pad.b} stroke="#e6ebf2" />
           <text className="tick" x={sx(t)} y={H - pad.b + 16} textAnchor="middle">
             {t.toFixed(2)}
           </text>

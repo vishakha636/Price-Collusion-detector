@@ -3,16 +3,16 @@
 // React Fast Refresh.
 
 export const axisStyle = {
-  stroke: '#3a4a5c',
-  tick: { fill: '#5b6a7d', fontSize: 10.5, fontFamily: 'var(--mono)' },
+  stroke: '#c5d0de',
+  tick: { fill: '#7a8898', fontSize: 10.5, fontFamily: 'var(--mono)' },
 }
 
 export const chartTooltip = {
   contentStyle: {
-    background: '#0f151d', border: '1px solid #2c3d50', borderRadius: 8,
-    fontSize: 12, fontFamily: 'var(--mono)', boxShadow: '0 8px 24px #0008',
+    background: '#ffffff', border: '1px solid #c5d0de', borderRadius: 8,
+    fontSize: 12, fontFamily: 'var(--mono)', boxShadow: '0 8px 24px #0f2a4a1f',
   },
-  labelStyle: { color: '#8b9bb0', fontSize: 11, marginBottom: 4 },
+  labelStyle: { color: '#56667a', fontSize: 11, marginBottom: 4 },
   itemStyle: { padding: '1px 0' },
 }
 

@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --test src/screener/screens.test.js src/watch/analyze.test.js src/watch/market.test.js src/watch/audit.test.js src/watch/history.test.js src/watch/regret.test.js src/watch/explain.test.js"
   },
   "dependencies": {
     "react": "^19.2.0",

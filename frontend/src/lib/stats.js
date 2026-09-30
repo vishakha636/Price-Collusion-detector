@@ -59,32 +59,32 @@ export const REGIMES = {
   q_myopic: {
     name: 'Myopic Q-learners',
     cls: 'competitive',
-    color: '#22d3ee',
+    color: '#0891b2',
     blurb: 'gamma = 0. Only chase this period’s profit.',
   },
   br_noisy: {
     name: 'Noisy best-response',
     cls: 'competitive',
-    color: '#60a5fa',
+    color: '#2563eb',
     blurb: 'Rule-based. Static best reply + mistakes.',
   },
   q_patient: {
     name: 'Patient Q-learners',
     cls: 'collusive',
-    color: '#fbbf24',
+    color: '#e07b00',
     blurb: 'gamma ≈ 0.95. Value future profit.',
   },
   grim_cartel: {
     name: 'Grim-trigger cartel',
     cls: 'collusive',
-    color: '#f87171',
+    color: '#d92d20',
     blurb: 'Rule-based. Explicit cartel + punishment.',
   },
 }
 
 export const REGIME_ORDER = ['q_myopic', 'br_noisy', 'q_patient', 'grim_cartel']
 
-export const CLS_COLOR = { competitive: '#22d3ee', collusive: '#fbbf24' }
+export const CLS_COLOR = { competitive: '#0891b2', collusive: '#e07b00' }
 
 /**
  * Features that are scale-free but still leak the simulation's construction.

@@ -36,28 +36,28 @@ export default function PricePath({ run, height = 250 }) {
     </div>
     <ResponsiveContainer width="100%" height={height}>
       <LineChart data={data} margin={{ top: 8, right: 68, bottom: 20, left: 4 }}>
-        <CartesianGrid stroke="#172230" vertical={false} />
+        <CartesianGrid stroke="#e6ebf2" vertical={false} />
         <XAxis dataKey="t" {...axis}
           ticks={thinTicks(data, 8)}
           label={{ value: 'observed period', position: 'insideBottom', offset: -12,
-            fill: '#5b6a7d', fontSize: 11, fontFamily: 'var(--mono)' }} />
+            fill: '#7a8898', fontSize: 11, fontFamily: 'var(--mono)' }} />
         <YAxis domain={[lo - pad, hi + pad]} {...axis} width={48}
           tickFormatter={(v) => v.toFixed(2)} />
         <Tooltip {...chartTooltip} formatter={(v) => Number(v).toFixed(4)} />
 
-        <ReferenceLine y={run.p_nash} stroke="#22d3ee" strokeDasharray="5 4" strokeOpacity={0.75}
-          label={{ value: 'Nash', position: 'right', fill: '#22d3ee', fontSize: 10.5,
+        <ReferenceLine y={run.p_nash} stroke="#0891b2" strokeDasharray="5 4" strokeOpacity={0.75}
+          label={{ value: 'Nash', position: 'right', fill: '#0891b2', fontSize: 10.5,
             fontFamily: 'var(--mono)' }} />
-        <ReferenceLine y={run.p_monopoly} stroke="#fbbf24" strokeDasharray="5 4" strokeOpacity={0.75}
-          label={{ value: 'monopoly', position: 'right', fill: '#fbbf24', fontSize: 10.5,
+        <ReferenceLine y={run.p_monopoly} stroke="#e07b00" strokeDasharray="5 4" strokeOpacity={0.75}
+          label={{ value: 'monopoly', position: 'right', fill: '#e07b00', fontSize: 10.5,
             fontFamily: 'var(--mono)' }} />
 
         {/* Animation off: a 200-point step series animating on every re-render is
             noise, and it makes the chart unreadable for the first second. */}
         <Line type="stepAfter" dataKey="A" name="seller A" dot={false}
-          stroke="#e6edf5" strokeWidth={1.4} isAnimationActive={false} />
+          stroke="#0f2a4a" strokeWidth={1.4} isAnimationActive={false} />
         <Line type="stepAfter" dataKey="B" name="seller B" dot={false}
-          stroke="#a78bfa" strokeWidth={1.4} strokeOpacity={0.9} isAnimationActive={false} />
+          stroke="#0c56a8" strokeWidth={1.4} strokeOpacity={0.9} isAnimationActive={false} />
       </LineChart>
     </ResponsiveContainer>
     </>

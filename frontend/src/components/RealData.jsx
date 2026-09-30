@@ -4,20 +4,20 @@ import {
 import { axisStyle as axis, chartTooltip } from '../lib/chartStyle'
 import { FEATURE_INFO, LEVEL_SENSITIVE, fmt } from '../lib/stats'
 
-const CITY_COLORS = ['#22d3ee', '#a78bfa', '#fbbf24', '#34d399', '#f87171']
+const CITY_COLORS = ['#0891b2', '#0c56a8', '#e07b00', '#12a150', '#d92d20']
 
 const BLOCKER_STYLE = {
-  'duplicated series': { c: '#f87171', bg: '#1d1114' },
-  'collection design': { c: '#fbbf24', bg: '#1d1710' },
-  'series length': { c: '#34d399', bg: '#0f1c17' },
+  'duplicated series': { c: '#d92d20', bg: '#fdecea' },
+  'collection design': { c: '#e07b00', bg: '#fff6e5' },
+  'series length': { c: '#12a150', bg: '#e7f6ec' },
 }
 
 function Gate({ n, title, pass, children }) {
-  const c = pass ? '#34d399' : 'var(--danger)'
+  const c = pass ? '#12a150' : 'var(--danger)'
   return (
     <div style={{
-      border: `1px solid ${pass ? '#34d39933' : '#f8717133'}`,
-      background: pass ? '#0f1c17' : '#1a1114',
+      border: `1px solid ${pass ? '#12a15033' : '#d92d2033'}`,
+      background: pass ? '#e7f6ec' : '#fdecea',
       borderRadius: 10, padding: '14px 16px', marginBottom: 12,
     }}>
       <div style={{ display: 'flex', gap: 10, alignItems: 'baseline', marginBottom: 6 }}>
@@ -152,7 +152,7 @@ export default function RealData({ real }) {
           )
         })}
 
-        <p className="note" style={{ borderLeftColor: '#f87171', background: '#1d1114' }}>
+        <p className="note" style={{ borderLeftColor: '#d92d20', background: '#fdecea' }}>
           <b>The fuel “finding” is an artefact of data construction, not a market
           observation.</b> In <code>fuel_scraper.py</code> a single city price is read
           off an aggregator page and then written once per PSU label:
@@ -165,7 +165,7 @@ export default function RealData({ real }) {
           Collecting more days cannot fix it; the scraper needs a source that lists
           each PSU's price separately.
         </p>
-        <p className="note" style={{ borderLeftColor: '#fbbf24', background: '#1d1710' }}>
+        <p className="note" style={{ borderLeftColor: '#e07b00', background: '#fff6e5' }}>
           <b>E-commerce needs a design change, not more days.</b> On an Amazon product
           page the recorded seller is whoever holds the Buy Box, so each ASIN yields
           exactly one seller per day. Of {meta.by_source.ecommerce_amazon?.products ?? 216}{' '}
@@ -189,10 +189,10 @@ export default function RealData({ real }) {
         </div>
         <ResponsiveContainer width="100%" height={260}>
           <LineChart data={chart} margin={{ top: 8, right: 16, bottom: 20, left: 4 }}>
-            <CartesianGrid stroke="#172230" vertical={false} />
+            <CartesianGrid stroke="#e6ebf2" vertical={false} />
             <XAxis dataKey="d" {...axis}
               label={{ value: 'date (2026)', position: 'insideBottom', offset: -12,
-                fill: '#5b6a7d', fontSize: 11, fontFamily: 'var(--mono)' }} />
+                fill: '#7a8898', fontSize: 11, fontFamily: 'var(--mono)' }} />
             <YAxis {...axis} width={56} domain={['dataMin - 0.6', 'dataMax + 0.6']}
               tickFormatter={(v) => `₹${Number(v).toFixed(1)}`} />
             <Tooltip {...chartTooltip} formatter={(v) => `₹${Number(v).toFixed(2)}`} />
@@ -214,7 +214,7 @@ export default function RealData({ real }) {
 
         {meta.data_quality?.map((q) => (
           <p key={q.source} className="note"
-            style={{ borderLeftColor: '#fbbf24', background: '#1d1710' }}>
+            style={{ borderLeftColor: '#e07b00', background: '#fff6e5' }}>
             <b>Second data-quality flag: {q.issue}.</b>{' '}
             {q.groups.map((g) => g.join(', ')).join(' — and — ')} return the same price
             on every observed date, which is why only three distinct lines appear above
@@ -245,9 +245,9 @@ export default function RealData({ real }) {
                 `${(FEATURE_INFO[f.feature] ?? [f.feature])[0]}\nneeds ${f.min_periods} periods`
                 + (flagged ? '\nexcluded: grid artefact' : '')}
                 style={{
-                  color: flagged ? 'var(--text-faint)' : on ? '#34d399' : 'var(--text-faint)',
-                  borderColor: on ? '#34d39944' : 'var(--line)',
-                  background: on ? '#34d3990e' : 'var(--panel)',
+                  color: flagged ? 'var(--text-faint)' : on ? '#12a150' : 'var(--text-faint)',
+                  borderColor: on ? '#12a15044' : 'var(--line)',
+                  background: on ? '#12a1500e' : 'var(--panel)',
                   textDecoration: flagged ? 'line-through' : 'none',
                 }}>
                 {on ? '✓' : '×'} {(FEATURE_INFO[f.feature] ?? [f.feature])[0]}

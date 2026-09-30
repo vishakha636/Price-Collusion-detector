@@ -6,5 +6,6 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   base: './',
   plugins: [react()],
-  server: { port: 5174, open: false },
+  // /api goes to the Python price tracker (python -m tracker.server).
+  server: { port: 5174, open: false, proxy: { '/api': 'http://127.0.0.1:8765' } },
 })

@@ -27,44 +27,38 @@ export default function ImpulseResponse({ run, height = 250 }) {
     <>
       <ResponsiveContainer width="100%" height={height}>
         <LineChart data={data} margin={{ top: 8, right: 68, bottom: 20, left: 4 }}>
-          <CartesianGrid stroke="#172230" vertical={false} />
+          <CartesianGrid stroke="#e6ebf2" vertical={false} />
           {rec > 0 && (
-            <ReferenceArea x1={0} x2={rec} fill="#f87171" fillOpacity={0.07} />
+            <ReferenceArea x1={0} x2={rec} fill="#d92d20" fillOpacity={0.07} />
           )}
           <XAxis dataKey="t" {...axis} ticks={thinTicks(data, 10)}
             label={{ value: 'periods since forced undercut', position: 'insideBottom',
-              offset: -12, fill: '#5b6a7d', fontSize: 11, fontFamily: 'var(--mono)' }} />
+              offset: -12, fill: '#7a8898', fontSize: 11, fontFamily: 'var(--mono)' }} />
           <YAxis domain={[lo - pad, hi + pad]} {...axis} width={48}
             tickFormatter={(v) => v.toFixed(2)} />
           <Tooltip {...chartTooltip} formatter={(v) => Number(v).toFixed(4)} />
 
-          <ReferenceLine x={0} stroke="#f87171" strokeWidth={1.5}
-            label={{ value: 'A defects', position: 'insideTopLeft', fill: '#f87171',
+          <ReferenceLine x={0} stroke="#d92d20" strokeWidth={1.5}
+            label={{ value: 'A defects', position: 'insideTopLeft', fill: '#d92d20',
               fontSize: 10.5, fontFamily: 'var(--mono)', offset: 8 }} />
-          <ReferenceLine y={run.p_nash} stroke="#22d3ee" strokeDasharray="5 4" strokeOpacity={0.7}
-            label={{ value: 'Nash', position: 'right', fill: '#22d3ee', fontSize: 10.5,
+          <ReferenceLine y={run.p_nash} stroke="#0891b2" strokeDasharray="5 4" strokeOpacity={0.7}
+            label={{ value: 'Nash', position: 'right', fill: '#0891b2', fontSize: 10.5,
               fontFamily: 'var(--mono)' }} />
-          <ReferenceLine y={run.p_monopoly} stroke="#fbbf24" strokeDasharray="5 4" strokeOpacity={0.7}
-            label={{ value: 'monopoly', position: 'right', fill: '#fbbf24', fontSize: 10.5,
+          <ReferenceLine y={run.p_monopoly} stroke="#e07b00" strokeDasharray="5 4" strokeOpacity={0.7}
+            label={{ value: 'monopoly', position: 'right', fill: '#e07b00', fontSize: 10.5,
               fontFamily: 'var(--mono)' }} />
 
           <Line type="stepAfter" dataKey="A" name="seller A (defector)" dot={{ r: 2 }}
-            stroke="#f87171" strokeWidth={1.6} isAnimationActive={false} />
+            stroke="#d92d20" strokeWidth={1.6} isAnimationActive={false} />
           <Line type="stepAfter" dataKey="B" name="seller B (rival)" dot={{ r: 2 }}
-            stroke="#e6edf5" strokeWidth={1.6} isAnimationActive={false} />
+            stroke="#0f2a4a" strokeWidth={1.6} isAnimationActive={false} />
         </LineChart>
       </ResponsiveContainer>
 
       <div className="legend" style={{ marginTop: 10, marginBottom: 0 }}>
         <span className="chip">
-          <span className="dot" style={{ background: '#f87171' }} />
+          <span className="dot" style={{ background: '#d92d20' }} />
           punishment depth {fmt(run.punish_depth * 100, 1)}%
-        </span>
-        <span className="chip">
-          recovery {rec < 0 ? 'never' : `${rec} periods`}
-        </span>
-        <span className="chip">
-          returns to {fmt(run.recovered_frac * 100, 1)}% of pre-shock level
         </span>
       </div>
     </>
