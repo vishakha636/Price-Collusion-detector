@@ -7,7 +7,7 @@ CELLS = [
 
 **A.** Detector trained on 200 simulated markets · **B.** Screening rules on real prices (same as the app) · **C.** Detector on real prices, with a check
 
-Files needed next to this notebook: `priceguard_model.py`, `run_summary.csv`, `sim_examples.csv`, `sample_prices.csv` (or your own CSV from the app's **CSV** button)."""),
+Files needed next to this notebook: `priceguard_model.py`, `train_real.py`, `run_summary.csv`, `sticky_summary.csv`, `real_pairs.csv`, `sim_examples.csv`, `sample_prices.csv` (or your own CSV exported with `export_prices.py`)."""),
     ("code", """# In Google Colab: upload the four files when asked. Locally: nothing to do.
 try:
     from google.colab import files
@@ -51,7 +51,7 @@ coef.plot.barh(figsize=(7, 5), title="feature weights (standardised)"); plt.grid
     ("code", """prices = pg.load_prices("sample_prices.csv")   # or your own CSV from the app
 pg.plot_prices(prices, "real prices · first column = your product"); plt.show()
 prices.tail()"""),
-    ("code", """result = pg.report(prices, model)"""),
+    ("code", """result = pg.report(prices)   # verdicts: screening rules"""),
     ("md", "## C · Why the detector's score is not used on real prices"),
     ("code", """real_feats = []
 daily = prices.resample("D").last().ffill(); me = daily.columns[0]
@@ -64,7 +64,11 @@ cmp = pd.DataFrame({
     "this real file": real[["change_freq", "autocorr1", "sync_change_rate"]].mean(),
 }).round(3)
 cmp"""),
-    ("code", """pg.distance_check(prices, train)"""),
+    ("md", "## C1 + C2 · Two attempts to make ML work on real prices"),
+    ("code", """models = pg.RealPriceModels()   # needs sticky_summary.csv, real_pairs.csv, train_real.py
+print(f"C1 sticky-simulation detector: CV AUC {models.sticky_auc:.3f} on simulated markets")
+print(f"C2 real-data model (rival vs unrelated pairs): CV AUC {models.real_auc:.3f}")
+_ = pg.report(prices, models, show_ml=True)"""),
 ]
 
 

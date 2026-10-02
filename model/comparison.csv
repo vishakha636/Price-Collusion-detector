@@ -1,0 +1,48 @@
+product,competitor,rules (90 d),original sim P,sticky sim P,real model: more unusual than % of unrelated pairs,inside original range,inside sticky range
+Skybags · Backpacks,Uppercase,Compliant,1.0,1.0,99,False,False
+Skybags · Backpacks,NASHER MILES,Compliant,1.0,1.0,99,False,False
+Skybags · Backpacks,HRX by Hrithik Roshan,Compliant,1.0,1.0,98,False,False
+Puma · Casual Shoes,RED CHIEF,Compliant,1.0,1.0,55,False,False
+Puma · Casual Shoes,NIKE,Compliant,1.0,1.0,94,False,False
+Puma · Casual Shoes,THOMAS CRICK,Compliant,1.0,1.0,88,False,False
+Puma · Casual Shoes,ADIDAS ORIGINALS,Compliant,1.0,1.0,66,False,False
+Foxglove · Cycling,Crow,Review,1.0,1.0,100,False,False
+Foxglove · Cycling,EAST COAST,Compliant,1.0,1.0,100,False,False
+Foxglove · Cycling,Tungsten,Review,1.0,1.0,100,False,False
+Foxglove · Cycling,XCi,Review,1.0,1.0,100,False,False
+Bosch · Drills,LEOFAST PROFESSIONAL,Compliant,1.0,1.0,98,False,False
+Bosch · Drills,INGCO,Compliant,1.0,1.0,99,False,False
+Bosch · Drills,Flipkart SmartBuy,Review,1.0,1.0,100,False,False
+Allen Solly · Mens Watches,Titan,Compliant,1.0,1.0,94,False,False
+Allen Solly · Mens Watches,LEE COOPER,Compliant,0.0,0.0,85,False,False
+Allen Solly · Mens Watches,Mathey-Tissot,Compliant,1.0,1.0,86,False,False
+Allen Solly · Mens Watches,NAVIFORCE,Compliant,1.0,1.0,98,False,False
+Allen Solly · Mens Watches,DANIEL KLEIN,Compliant,1.0,1.0,71,False,False
+Allen Solly · Mens Watches,DANIEL HECHTER,Compliant,1.0,1.0,94,False,False
+Amplesta · Mixers & Grinders,Grand plus,Compliant,1.0,1.0,100,False,False
+Amplesta · Mixers & Grinders,HAVELLS,Compliant,1.0,1.0,95,False,False
+Amplesta · Mixers & Grinders,Hindware Smart Appliances,Compliant,1.0,1.0,100,False,False
+Amplesta · Mixers & Grinders,Beyond Appliances,Compliant,1.0,1.0,100,False,False
+Amplesta · Mixers & Grinders,Faber,Review,1.0,1.0,100,False,False
+Amplesta · Mixers & Grinders,AGARO,Compliant,1.0,1.0,90,False,False
+Beardo · Perfumes,THE MAN COMPANY,Compliant,0.0,0.0,94,False,False
+Beardo · Perfumes,French Factor,Compliant,1.0,1.0,97,False,False
+Beardo · Perfumes,Wild Stone,Compliant,1.0,1.0,93,False,False
+Beardo · Perfumes,BELLAVITA,Compliant,1.0,1.0,98,False,False
+Beardo · Perfumes,Em5,Compliant,1.0,1.0,91,False,False
+Beardo · Perfumes,Ajmal,Compliant,1.0,1.0,82,False,False
+Ambrane · Power Banks,Portronics,Compliant,1.0,1.0,95,False,False
+Ambrane · Power Banks,boAt,Compliant,1.0,0.0,67,False,False
+Kamiliant By American Tourister · Suitcases,ARISTOCRAT,Compliant,1.0,1.0,100,False,False
+Kamiliant By American Tourister · Suitcases,SKYBAGS,Compliant,1.0,1.0,100,False,False
+Kamiliant By American Tourister · Suitcases,NASHER MILES,Compliant,1.0,1.0,97,False,False
+Kamiliant By American Tourister · Suitcases,Mokobara,Compliant,1.0,1.0,98,False,False
+Kamiliant By American Tourister · Suitcases,ALFA by VIP,Compliant,1.0,1.0,100,False,False
+Kamiliant By American Tourister · Suitcases,TOMMY HILFIGER,Compliant,1.0,1.0,93,False,False
+Wrogn · Mens Watches,Timex,Compliant,1.0,1.0,88,False,False
+Wrogn · Mens Watches,Titan,Compliant,1.0,1.0,27,False,False
+Wrogn · Mens Watches,Daniel Hechter,Compliant,1.0,0.85,53,False,False
+Ajmal · Perfumes,SKINN,Compliant,1.0,1.0,22,False,False
+Ajmal · Perfumes,Giorgio Armani,Compliant,1.0,1.0,98,False,False
+Portronics · Power Banks,Ambrane,Compliant,1.0,0.97,56,False,False
+Portronics · Power Banks,boAt,Compliant,0.07,0.05,88,False,False

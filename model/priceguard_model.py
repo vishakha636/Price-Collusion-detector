@@ -269,53 +269,82 @@ def rule_audit(prices: pd.DataFrame, window_days: float = NEED["window_days"]) -
 
 
 # =============================================================================
-# C. Detector on real prices
+# C. Models that work on real prices
+#
+#   C1. STICKY DETECTOR -- the simulated markets observed the way real shops post
+#       prices (each price updates only on some days; train_sticky.py), using only
+#       features of how the two prices relate (no price levels, no stickiness of
+#       one price on its own). Labels: collusive / competitive from the simulation.
+#   C2. REAL MODEL -- trained on ~2,700 real product pairs (train_real.py):
+#       rival brands vs unrelated products on the same store. Scores how unusual
+#       a pair's co-movement is. Labels certain; it measures unusual co-movement,
+#       not proven collusion.
+#
+# Scores are reported as ranks against real pairs, because a probability
+# learned on simulations is not calibrated for real shops.
 # =============================================================================
 
-CAVEAT = ("Trained on simulated markets where bots reprice every period; real shop prices change "
-          "less often, so treat this probability as supporting evidence, not a verdict.")
-def distance_check(prices: pd.DataFrame, train_df: pd.DataFrame) -> pd.DataFrame:
-    """How far is each (you, competitor) pair from the nearest simulated market?
-
-    Features are standardised on the training data; the distance to the
-    nearest training market is compared with how close training markets are
-    to each other (95th percentile of their nearest-neighbour distances).
-    Far beyond that = the model is extrapolating and its score means little."""
-    from sklearn.preprocessing import StandardScaler
-    X = train_df[DETECTOR_FEATURES].to_numpy()
-    sc = StandardScaler().fit(X)
-    Z = sc.transform(X)
-    D = np.sqrt(((Z[:, None, :] - Z[None, :, :]) ** 2).sum(-1))
-    np.fill_diagonal(D, np.inf)
-    limit = float(np.quantile(D.min(1), 0.95))
-    daily = prices.resample("D").last().ffill()
-    me = daily.columns[0]
-    rows = []
-    for c in daily.columns[1:]:
-        pair = daily[[me, c]].dropna()
-        if len(pair) < 10:
-            continue
-        f = extract_features(pair[me].to_numpy(), pair[c].to_numpy())
-        z = sc.transform(pd.DataFrame([f])[DETECTOR_FEATURES].to_numpy())
-        dist = float(np.sqrt(((Z - z) ** 2).sum(1)).min())
-        rows.append({"competitor": c, "distance to nearest simulated market": round(dist, 1),
-                     "training markets are within": round(limit, 1), "inside training range": dist <= limit})
-    return pd.DataFrame(rows)
+INTERACTION = ["price_corr", "diff_corr", "sync_change_rate", "retaliation_rate", "undercut_frac", "lead_lag_strength"]
 
 
-def ml_scores(prices: pd.DataFrame, model) -> dict:
-    """Daily series (last price of each day, carried forward) -> P(collusive) per competitor."""
-    daily = prices.resample("D").last().ffill()
-    me = daily.columns[0]
-    out = {}
-    for c in daily.columns[1:]:
-        pair = daily[[me, c]].dropna()
-        if len(pair) < 10:
-            out[c] = None
-            continue
-        f = extract_features(pair[me].to_numpy(), pair[c].to_numpy())
-        out[c] = float(model.predict_proba(pd.DataFrame([f])[DETECTOR_FEATURES])[0, 1])
-    return out
+def _gb():
+    from sklearn.ensemble import GradientBoostingClassifier
+    return GradientBoostingClassifier(random_state=0)
+
+
+def _grouped_auc(X, y, groups) -> float:
+    from sklearn.metrics import roc_auc_score
+    from sklearn.model_selection import GroupKFold, cross_val_predict
+    return roc_auc_score(y, cross_val_predict(_gb(), X, y, cv=GroupKFold(5), groups=groups, method="predict_proba")[:, 1])
+
+
+class RealPriceModels:
+    """Trains C1 and C2 from model/sticky_summary.csv and model/real_pairs.csv."""
+
+    def __init__(self, folder=HERE):
+        from train_real import REAL_FEATURES
+        self.REAL_FEATURES = REAL_FEATURES
+        st = pd.read_csv(Path(folder) / "sticky_summary.csv")
+        st["y"] = (st.label == "collusive").astype(int)
+        rp = pd.read_csv(Path(folder) / "real_pairs.csv")
+        self.sticky_auc = _grouped_auc(st[INTERACTION], st.y, st.run_id)
+        self.real_auc = _grouped_auc(rp[REAL_FEATURES].fillna(0), rp.label, rp.store + "|" + rp.cat_a)
+        self.sticky = _gb().fit(st[INTERACTION], st.y)
+        self.real = _gb().fit(rp[REAL_FEATURES].fillna(0), rp.label)
+        rivals = rp[(rp.label == 1)].dropna(subset=[f"sim_{k}" for k in INTERACTION])
+        self.rival_ref = np.sort(self.sticky.predict_proba(rivals[[f"sim_{k}" for k in INTERACTION]].set_axis(INTERACTION, axis=1))[:, 1])
+        self.real_ref = np.sort(self.real.predict_proba(rp.loc[rp.label == 1, REAL_FEATURES].fillna(0))[:, 1])
+        self.n_rival, self.n_unrel, self.n_sticky = len(rivals), int((rp.label == 0).sum()), len(st)
+        from sklearn.preprocessing import StandardScaler
+        self.sc = StandardScaler().fit(st[INTERACTION])
+        Z = self.sc.transform(st[INTERACTION])
+        D = np.sqrt(((Z[:, None, :] - Z[None, :, :]) ** 2).sum(-1))
+        np.fill_diagonal(D, np.inf)
+        self.Z, self.limit = Z, float(np.quantile(D.min(1), 0.95))
+
+    @staticmethod
+    def _pct(ref, v) -> int:
+        return int(round(100 * np.searchsorted(ref, v) / len(ref)))
+
+    def score(self, prices: pd.DataFrame) -> dict:
+        """Per competitor: both models' ranks among real rival pairs (50 = a typical competitor pair)."""
+        from train_real import pair_features
+        daily = prices.resample("D").last().ffill()
+        me = daily.columns[0]
+        out = {}
+        for c in daily.columns[1:]:
+            pair = daily[[me, c]].dropna()
+            if len(pair) < 20:
+                out[c] = None
+                continue
+            f = extract_features(pair[me].to_numpy(), pair[c].to_numpy())
+            x = pd.DataFrame([f])[INTERACTION]
+            p = float(self.sticky.predict_proba(x)[0, 1])
+            dist = float(np.sqrt(((self.Z - self.sc.transform(x)) ** 2).sum(1)).min())
+            fr = pair_features(pair[me], pair[c], min_overlap=45)
+            real_pct = None if fr is None else self._pct(self.real_ref, self.real.predict_proba(pd.DataFrame([fr])[self.REAL_FEATURES].fillna(0))[0, 1])
+            out[c] = {"sticky_rank": self._pct(self.rival_ref, p), "inside": dist <= self.limit, "real_pct": real_pct}
+        return out
 
 
 def plot_prices(prices: pd.DataFrame, title: str = ""):
@@ -329,34 +358,40 @@ def plot_prices(prices: pd.DataFrame, title: str = ""):
     return ax
 
 
-def report(prices: pd.DataFrame, model=None, window_days: float = 2) -> dict:
+def report(prices: pd.DataFrame, models: RealPriceModels | None = None, window_days: float = 2,
+           show_ml: bool = False) -> dict:
+    """Rules give the verdict. With show_ml, the two experimental model ranks are added (see C1/C2)."""
     audit = rule_audit(prices, window_days)
     print(f"\nProduct: {audit['product']}   ·   {len(prices)} readings   ·   "
           f"{prices.index[0].date()} to {prices.index[-1].date()}")
     print(f"Verdict (screening rules): {audit['verdict']}\n")
+    sc = models.score(prices) if models and show_ml else {}
     rows = []
-    ml = ml_scores(prices, model) if model is not None else {}
     for name, r in audit["rivals"].items():
         yf, tf = r.get("you_followed", {}), r.get("they_followed", {})
-        rows.append({
-            "competitor": name, "verdict": LEVEL[r["level"]], "score": r.get("score"),
+        row = {
+            "competitor": name,
+            "verdict": LEVEL[r["level"]],
+            "score": r.get("score"),
+            "warning signs": ", ".join(k for k, x in r["signs"].items() if x["strong"]) or "none",
             "you followed their rises": f"{yf['k']}/{yf['n']}" if yf else "—",
             "they followed yours": f"{tf['k']}/{tf['n']}" if tf else "—",
-            "warning signs": ", ".join(k for k, s in r["signs"].items() if s["strong"]) or "none",
-            "sim-model score": None if ml.get(name) is None else round(ml[name], 2),
-        })
+        }
+        if show_ml:
+            m = sc.get(name) or {}
+            row.update({
+                "ML detector rank": m.get("sticky_rank", "—"),
+                "real model rank": m.get("real_pct") if m.get("real_pct") is not None else "—",
+                "in ML range": {True: "yes", False: "no"}.get(m.get("inside"), "—"),
+            })
+        rows.append(row)
     table = pd.DataFrame(rows)
-    with pd.option_context("display.width", 160, "display.max_columns", 20):
+    with pd.option_context("display.width", 200, "display.max_columns", 20):
         print(table.to_string(index=False))
-    if model is not None:
-        rc = distance_check(prices, load_training())
-        print("\nIs this file like the markets the detector learned from?")
-        print(rc.to_string(index=False))
-        if len(rc) and not rc["inside training range"].all():
-            print("-> Outside the training range: the sim-model score is not reliable here. Use the screening-rule verdict.")
-        print(f"Model note: {CAVEAT}")
-        return {"audit": audit, "table": table, "ml": ml, "range": rc}
-    return {"audit": audit, "table": table, "ml": ml}
+    if show_ml:
+        print("\nExperimental, not a verdict: ranks among 685 real rival pairs (50 = typical pair)."
+              "\nOn real prices these ranks change with the model type -- see compare_models.py.")
+    return {"audit": audit, "table": table, "scores": sc}
 
 
 def main(argv):
@@ -366,15 +401,23 @@ def main(argv):
         pass
     df = load_training()
     ev = evaluate(df)
-    print(f"A. Detector trained on {ev['markets']} simulated markets "
-          f"({ev['collusive']} collusive, {ev['competitive']} competitive), {len(DETECTOR_FEATURES)} features")
-    print(f"   5-fold cross-validated AUC {ev['cv_auc']:.3f} · accuracy {ev['cv_accuracy']:.0%}")
-    for k in ("train Q-learning -> test rule-based", "train rule-based -> test Q-learning"):
-        print(f"   {k}: AUC {ev[k]:.3f}")
-    model = train(df)
-    for path in argv[1:]:
-        print(f"\nB + C. {path}")
-        report(load_prices(path), model)
+    print(f"A. Original detector: {ev['markets']} simulated markets, {len(DETECTOR_FEATURES)} features")
+    print(f"   cross-validated AUC {ev['cv_auc']:.3f} · accuracy {ev['cv_accuracy']:.0%}")
+    print("   On real prices: outside its training range (simulated bots reprice every period).")
+    models = None
+    if (HERE / "sticky_summary.csv").exists() and (HERE / "real_pairs.csv").exists():
+        models = RealPriceModels()
+        print(f"C1. Sticky-simulation detector: {models.n_sticky} simulated markets observed like real shops,"
+              f" {len(INTERACTION)} interaction features · cross-validated AUC {models.sticky_auc:.3f}")
+        print(f"C2. Real-data model: {models.n_rival} real rival pairs vs {models.n_unrel} unrelated pairs"
+              f" · cross-validated AUC {models.real_auc:.3f}")
+        print("   Finding: on real prices, C1's ranking depends on the model type (logistic agrees with the"
+              "\n   rules, tree models contradict them); C2 has no real collusion labels to learn from."
+              "\n   -> Verdicts below come from the screening rules. Add --ml to see the experimental ranks.")
+    show_ml = "--ml" in argv
+    for path in [a for a in argv[1:] if not a.startswith("--")]:
+        print(f"\nB. {path}")
+        report(load_prices(path), models, show_ml=show_ml)
 
 
 if __name__ == "__main__":

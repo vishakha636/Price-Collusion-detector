@@ -289,16 +289,19 @@ def scheduler(every_hours: float):
     """Collect every `every_hours` while the server runs. After a restart the
     first round starts as soon as one is due (1 minute in), not 6 hours later."""
     last = last_collected()
-    wait = 60 if last is None else max(60, last + every_hours * 3600 - time.time())
+    due = time.time() + 60 if last is None else max(time.time() + 60, last + every_hours * 3600)
     while True:
-        print(f"[scheduler] next collection in {wait / 60:.0f} min", flush=True)
-        time.sleep(wait)
+        print(f"[scheduler] next collection in {(due - time.time()) / 60:.0f} min", flush=True)
+        # check the wall clock every minute: one long sleep() stops counting while
+        # the laptop sleeps, which pushed rounds back by hours
+        while time.time() < due:
+            time.sleep(60)
         try:
             n = run_round()
             print(f"[scheduler] collected {n} price(s)", flush=True)
         except Exception as e:  # keep the scheduler alive through one bad round
             print(f"[scheduler] round failed: {e}", flush=True)
-        wait = every_hours * 3600
+        due = time.time() + every_hours * 3600
 
 
 def main():
